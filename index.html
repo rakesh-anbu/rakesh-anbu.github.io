@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rakesh Anbu | AI &amp; Machine Learning</title>
+<meta name="description" content="Rakesh Anbu builds LLM, RAG and machine learning systems, with a background in banking risk and audit. Based in Chennai, India.">
+<meta name="theme-color" content="#05060a">
+<meta property="og:title" content="Rakesh Anbu | AI &amp; Machine Learning">
+<meta property="og:description" content="LLM, RAG and machine learning systems, built by someone who spent two years auditing banks.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05060a;
+    --panel: rgba(16, 20, 30, .62);
+    --panel-solid: #0d111a;
+    --line: rgba(148, 163, 184, .16);
+    --text: #e8eef9;
+    --muted: #8e9bb0;
+    --c1: #22d3ee;
+    --c2: #a78bfa;
+    --c3: #f472b6;
+    --ok: #4ade80;
+    --grad: linear-gradient(100deg, var(--c1), var(--c2) 55%, var(--c3));
+    --radius: 18px;
+    --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  a { color: var(--c1); text-decoration: none; }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.12; margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  button { font-family: inherit; }
+  svg { flex: none; }
+  :focus-visible { outline: 2px solid var(--c1); outline-offset: 3px; border-radius: 8px; }
+  ::selection { background: rgba(34, 211, 238, .3); }
+
+  /* ---------- Background layers ---------- */
+  #net { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; }
+  .aurora { position: fixed; inset: 0; z-index: -3; overflow: hidden; pointer-events: none; }
+  .aurora i { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .34; }
+  .aurora i:nth-child(1) { width: 520px; height: 520px; left: -140px; top: -160px; background: #0e7490; animation: drift 22s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2) { width: 560px; height: 560px; right: -180px; top: 14%; background: #5b21b6; animation: drift 28s ease-in-out infinite alternate-reverse; }
+  .aurora i:nth-child(3) { width: 420px; height: 420px; left: 30%; bottom: -220px; background: #9d174d; opacity: .2; animation: drift 34s ease-in-out infinite alternate; }
+  @keyframes drift { to { transform: translate3d(70px, 50px, 0) scale(1.12); } }
+  .gridlines {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px; opacity: .35;
+    -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, #000 20%, transparent 75%);
+            mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, #000 20%, transparent 75%);
+  }
+  #cursorGlow {
+    position: fixed; left: 0; top: 0; width: 460px; height: 460px; margin: -230px 0 0 -230px; z-index: -1;
+    border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .4s;
+    background: radial-gradient(circle, rgba(34, 211, 238, .13), transparent 62%);
+  }
+  #progress { position: fixed; left: 0; top: 0; height: 2px; width: 100%; z-index: 100; background: var(--grad); transform-origin: 0 50%; transform: scaleX(0); box-shadow: 0 0 12px var(--c1); }
+
+  /* ---------- Layout ---------- */
+  .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--c1); color: #001018; padding: 8px 14px; border-radius: 8px; z-index: 200; font-weight: 600; }
+  .skip:focus { left: 8px; }
+
+  header.site { position: sticky; top: 0; z-index: 50; background: rgba(5, 6, 10, .6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 62px; gap: 16px; }
+  .brand { font-family: var(--mono); font-weight: 700; color: var(--text); font-size: 15px; letter-spacing: .02em; }
+  .brand b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav-links { display: flex; align-items: center; gap: 4px; }
+  .nav-links a { color: var(--muted); font-size: 13.5px; font-weight: 500; padding: 7px 12px; border-radius: 9px; transition: color .2s, background .2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); background: rgba(148, 163, 184, .1); }
+  .nav-links a.pill { color: #001018; background: var(--grad); font-weight: 600; margin-left: 8px; }
+  .nav-links a.pill:hover { filter: brightness(1.12); }
+  @media (max-width: 760px) { .nav-links a.hide-sm { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 44px; align-items: center; padding: 76px 20px 46px; }
+  .status { display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: var(--panel); padding: 7px 13px; border-radius: 999px; backdrop-filter: blur(8px); }
+  .pulse { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+  .pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid var(--ok); animation: ping 1.8s ease-out infinite; }
+  @keyframes ping { from { transform: scale(.5); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
+  .hero h1 { font-size: clamp(36px, 5.6vw, 64px); letter-spacing: -.03em; margin: 24px 0 20px; }
+  .glow-text { background: var(--grad); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 7s linear infinite; }
+  @keyframes sheen { to { background-position: -200% 0; } }
+  .lede { font-size: clamp(16px, 1.9vw, 18.5px); color: var(--muted); max-width: 58ch; }
+  .lede strong { color: var(--text); font-weight: 600; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .btn {
+    position: relative; display: inline-flex; align-items: center; gap: 9px; padding: 12px 19px; border-radius: 12px;
+    font-weight: 600; font-size: 15px; color: var(--text); cursor: pointer; border: 1px solid var(--line);
+    background: var(--panel); backdrop-filter: blur(8px); transition: transform .2s, border-color .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); border-color: var(--c1); box-shadow: 0 0 0 1px rgba(34, 211, 238, .25), 0 10px 30px rgba(34, 211, 238, .14); }
+  .btn.primary { border: 0; color: #00131a; background: var(--grad); box-shadow: 0 8px 30px rgba(34, 211, 238, .25); }
+  .btn.primary:hover { box-shadow: 0 10px 40px rgba(167, 139, 250, .45); }
+
+  /* Terminal */
+  .term { position: relative; border-radius: var(--radius); background: rgba(8, 11, 18, .78); border: 1px solid var(--line); backdrop-filter: blur(12px); box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 60px rgba(34, 211, 238, .08); overflow: hidden; }
+  .term::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(140deg, rgba(34, 211, 238, .7), transparent 35%, transparent 65%, rgba(167, 139, 250, .7)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #334155; }
+  .term-bar i:nth-child(1) { background: #f87171; } .term-bar i:nth-child(2) { background: #fbbf24; } .term-bar i:nth-child(3) { background: #4ade80; }
+  .term-bar span { margin-left: 8px; }
+  .term-body { padding: 18px 18px 20px; font-family: var(--mono); font-size: 13px; line-height: 1.75; min-height: 292px; }
+  .term-body .cmd { color: var(--text); }
+  .term-body .cmd::before { content: "❯ "; color: var(--c1); }
+  .term-body .out { color: var(--muted); padding-left: 18px; }
+  .term-body .out b { color: var(--c2); font-weight: 500; }
+  .term-body .out.ok { color: var(--ok); }
+  .caret { display: inline-block; width: 8px; height: 15px; background: var(--c1); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding-top: 52px; } }
+
+  /* Marquee */
+  .marquee { border-block: 1px solid var(--line); background: rgba(8, 11, 18, .5); overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  .track { display: flex; width: max-content; gap: 38px; padding: 13px 0; animation: slide 38s linear infinite; font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .track span::before { content: "◆"; color: var(--c1); margin-right: 38px; font-size: 9px; vertical-align: 2px; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ---------- Sections ---------- */
+  section { padding: 58px 0 10px; }
+  .head { margin-bottom: 26px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--c1); }
+  .eyebrow b { color: var(--muted); font-weight: 400; }
+  .head h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -.025em; margin-top: 10px; }
+  .head p { color: var(--muted); margin-top: 8px; max-width: 64ch; }
+
+  /* Glass card with cursor spotlight */
+  .glass {
+    position: relative; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform .25s ease, border-color .25s, box-shadow .25s; transform-style: preserve-3d; will-change: transform;
+  }
+  .glass::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(34, 211, 238, .16), rgba(167, 139, 250, .08) 40%, transparent 65%);
+  }
+  .glass:hover { border-color: rgba(34, 211, 238, .5); box-shadow: 0 18px 50px rgba(0, 0, 0, .45), 0 0 34px rgba(34, 211, 238, .1); }
+  .glass:hover::before { opacity: 1; }
+  .glass > * { position: relative; }
+
+  /* Metrics */
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .metric { padding: 22px; overflow: hidden; }
+  .metric .idx { position: absolute; right: 16px; top: 14px; font-family: var(--mono); font-size: 11px; color: rgba(148, 163, 184, .45); }
+  .metric .num { font-family: var(--mono); font-weight: 700; font-size: clamp(30px, 4vw, 40px); letter-spacing: -.03em; line-height: 1.05; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .metric .label { font-weight: 600; margin-top: 10px; }
+  .metric .note { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+  .bar { height: 2px; margin-top: 16px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--grad); transition: width 1.4s cubic-bezier(.2, .8, .2, 1); }
+  .in .bar i { width: var(--w, 70%); }
+  @media (max-width: 860px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .metrics { grid-template-columns: 1fr; } }
+
+  /* Projects */
+  .projects { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .card { padding: 26px; display: flex; flex-direction: column; gap: 15px; }
+  .card.wide { grid-column: 1 / -1; }
+  .card-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .badge { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: rgba(5, 6, 10, .5); }
+  .badge.live { color: var(--ok); border-color: rgba(74, 222, 128, .45); }
+  .card h3 { font-size: 22px; letter-spacing: -.02em; }
+  .card .desc { color: var(--muted); }
+  .card .desc strong { color: var(--text); font-weight: 600; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 14px; border-radius: 12px; background: rgba(5, 6, 10, .55); border: 1px dashed var(--line); }
+  .flow-label { width: 100%; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .step { font-size: 12.5px; font-weight: 500; padding: 5px 10px; border-radius: 8px; background: var(--panel-solid); border: 1px solid var(--line); animation: relay 6s ease-in-out infinite; animation-delay: calc(var(--i) * .8s); }
+  @keyframes relay { 0%, 14%, 100% { border-color: var(--line); box-shadow: none; color: var(--text); } 6% { border-color: var(--c1); box-shadow: 0 0 16px rgba(34, 211, 238, .45); color: #fff; } }
+  .arrow { color: var(--c2); font-family: var(--mono); font-size: 12px; }
+  .results { display: flex; flex-wrap: wrap; gap: 22px; }
+  .results b { display: block; font-family: var(--mono); font-size: 20px; color: var(--c1); }
+  .results span { font-size: 12.5px; color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-family: var(--mono); font-size: 11.5px; padding: 4px 9px; border-radius: 7px; background: rgba(148, 163, 184, .08); border: 1px solid var(--line); color: #b6c2d6; white-space: nowrap; transition: border-color .2s, color .2s; }
+  .tag:hover { border-color: var(--c2); color: #fff; }
+  .card-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 4px; }
+  .card-links a { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; font-size: 14px; padding: 10px 15px; border-radius: 11px; border: 1px solid var(--line); color: var(--text); background: rgba(5, 6, 10, .5); transition: border-color .2s, transform .2s; }
+  .card-links a:hover { border-color: var(--c1); transform: translateY(-1px); }
+  .card-links a.go { background: var(--grad); color: #00131a; border: 0; }
+  .fine { font-size: 12.5px; color: var(--muted); }
+  @media (max-width: 860px) { .projects { grid-template-columns: 1fr; } }
+
+  /* Skills */
+  .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .skill { padding: 22px; }
+  .skill h3 { font-size: 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .skill h3 svg { color: var(--c1); }
+  @media (max-width: 860px) { .skills { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .skills { grid-template-columns: 1fr; } }
+
+  /* Timeline */
+  .timeline { position: relative; margin-left: 8px; padding-left: 28px; }
+  .timeline::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--c1), var(--c2), transparent); }
+  .job { position: relative; padding-bottom: 28px; }
+  .job:last-child { padding-bottom: 0; }
+  .job::before { content: ""; position: absolute; left: -34px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--c1); box-shadow: 0 0 14px var(--c1); }
+  .job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+  .job h3 { font-size: 18px; }
+  .job .when { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  .job .where { color: var(--c2); font-weight: 600; font-size: 14.5px; margin-top: 3px; }
+  .job ul { margin-top: 9px; color: var(--muted); }
+  .job li { position: relative; padding-left: 18px; margin-top: 5px; }
+  .job li::before { content: "▹"; position: absolute; left: 0; color: var(--c1); }
+
+  /* Contact */
+  .contact { padding: clamp(30px, 6vw, 56px); text-align: center; overflow: hidden; }
+  .contact::after { content: ""; position: absolute; left: 50%; top: -120px; width: 560px; height: 280px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(167, 139, 250, .3), transparent); pointer-events: none; }
+  .contact h2 { font-size: clamp(26px, 4vw, 40px); letter-spacing: -.025em; margin-top: 10px; }
+  .contact p { color: var(--muted); margin: 14px auto 0; max-width: 54ch; }
+  .contact .cta { justify-content: center; }
+  .toast { min-height: 22px; margin-top: 16px; font-family: var(--mono); font-size: 13px; color: var(--ok); }
+
+  footer { padding: 36px 0 48px; color: var(--muted); font-size: 13.5px; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+  .foot-icons { display: flex; gap: 10px; }
+  .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 11px; background: var(--panel); border: 1px solid var(--line); color: var(--text); cursor: pointer; transition: border-color .2s, transform .2s, box-shadow .2s; }
+  .icon-btn:hover { border-color: var(--c1); transform: translateY(-2px); box-shadow: 0 0 20px rgba(34, 211, 238, .3); }
+
+  /* Reveal */
+  .js .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1); transition-delay: var(--d, 0s); }
+  .js .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .glass, .btn { transition: none; }
+    .bar i { transition: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="progress" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="gridlines" aria-hidden="true"></div>
+<div id="cursorGlow" aria-hidden="true"></div>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Rakesh Anbu, home"><b>&lt;</b>rakesh.anbu<b>/&gt;</b></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="hide-sm" href="#impact">Impact</a>
+      <a class="hide-sm" href="#projects">Projects</a>
+      <a class="hide-sm" href="#skills">Skills</a>
+      <a class="hide-sm" href="#experience">Experience</a>
+      <a class="pill" href="#contact">Hire me</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero -->
+  <div class="wrap hero" id="top">
+    <div>
+      <span class="status"><span class="pulse" aria-hidden="true"></span>Open to AI / ML engineering roles · Chennai, India</span>
+      <h1>I build LLM and ML systems that <span class="glow-text">hold up to an auditor's questions.</span></h1>
+      <p class="lede">
+        I'm <strong>Rakesh Anbu</strong>. I work on a voice AI agent for a financial services client at doodleblue Innovations,
+        and I build RAG and credit-risk models on the side. Before AI, I spent <strong>two years at Deloitte auditing retail banking</strong>,
+        so I care about models that are explainable, tested, and tied to a business number.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/rakesh-anbu" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.900 0-1.300.5-2.400 1.200-3.200-.1-.3-.5-1.500.1-3.200 0 0 1-.3 3.300 1.200a11.500 11.500 0 0 1 6 0C17.300 5 18.300 5.300 18.300 5.300c.6 1.700.2 2.900.1 3.200.8.8 1.200 1.900 1.200 3.200 0 4.600-2.800 5.600-5.500 5.900.4.4.8 1.100.8 2.200v3.300c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+          View GitHub
+        </a>
+        <a class="btn" href="https://www.linkedin.com/in/rakesh-anbu/" target="_blank" rel="noopener">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.4 20.4h-3.5v-5.600c0-1.300 0-3-1.900-3s-2.100 1.400-2.100 2.900v5.700H9.400V9h3.400v1.600h.1c.5-.9 1.600-1.900 3.400-1.900 3.600 0 4.300 2.400 4.300 5.500v6.200zM5.300 7.400a2.100 2.100 0 1 1 0-4.100 2.100 2.100 0 0 1 0 4.100zM7.100 20.400H3.600V9h3.500v11.400zM22.200 0H1.800C.8 0 0 .8 0 1.700v20.600c0 .9.800 1.700 1.800 1.700h20.400c1 0 1.800-.8 1.800-1.700V1.700C24 .8 23.200 0 22.200 0z"/></svg>
+          Connect on LinkedIn
+        </a>
+        <a class="btn" href="resume.pdf" download>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          Download Resume
+        </a>
+      </div>
+    </div>
+
+    <div class="term" aria-label="Profile summary">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>rakesh@portfolio: ~</span></div>
+      <div class="term-body" id="term">
+        <div class="cmd">whoami</div>
+        <div class="out">Rakesh Anbu · AI engineering @ <b>doodleblue</b></div>
+        <div class="cmd">cat focus.txt</div>
+        <div class="out">voice AI agents · <b>RAG</b> · credit-risk ML</div>
+        <div class="cmd">cat background.txt</div>
+        <div class="out">2 yrs banking audit @ <b>Deloitte</b> · data analyst @ Trendlyne</div>
+        <div class="cmd">ls projects/</div>
+        <div class="out">chat-doc-rag/ <b>[live]</b>  credit-risk/  ai-buddy/  fake-news/</div>
+        <div class="cmd">./status</div>
+        <div class="out ok">● open to AI/ML roles · Chennai · Bengaluru</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Python</span><span>RAG pipelines</span><span>LangChain</span><span>Pinecone</span><span>ChromaDB</span><span>Gemini</span><span>Groq</span><span>LightGBM</span><span>XGBoost</span><span>SHAP</span><span>Streamlit</span><span>SQL</span><span>Voice AI agents</span><span>Credit risk</span>
+      <span>Python</span><span>RAG pipelines</span><span>LangChain</span><span>Pinecone</span><span>ChromaDB</span><span>Gemini</span><span>Groq</span><span>LightGBM</span><span>XGBoost</span><span>SHAP</span><span>Streamlit</span><span>SQL</span><span>Voice AI agents</span><span>Credit risk</span>
+    </div>
+  </div>
+
+  <!-- Impact -->
+  <section id="impact">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow"><b>01 //</b> Impact &amp; metrics</span>
+        <h2>The numbers, with their context</h2>
+        <p>Project figures come from public datasets and are reproducible from the linked repositories.</p>
+      </div>
+      <div class="metrics">
+        <div class="glass metric reveal" style="--d:0s;--w:68%">
+          <span class="idx">M.01</span>
+          <div class="num" data-count="2" data-suffix="+ yrs">2+ yrs</div>
+          <div class="label">Banking risk &amp; audit</div>
+          <div class="note">Concurrent audit of mortgages, loans and credit cards at Deloitte, against RBI guidelines.</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="glass metric reveal" style="--d:.08s;--w:92%">
+          <span class="idx">M.02</span>
+          <div class="num" data-count="150" data-suffix="k">150k</div>
+          <div class="label">Records modelled</div>
+          <div class="note">Credit default system benchmarking six classifiers on a 30k holdout set.</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="glass metric reveal" style="--d:.16s;--w:86%">
+          <span class="idx">M.03</span>
+          <div class="num" data-count="0.861" data-decimals="3">0.861</div>
+          <div class="label">ROC-AUC</div>
+          <div class="note">LightGBM, the best of six models in the credit-risk benchmark.</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="glass metric reveal" style="--d:0s;--w:41%">
+          <span class="idx">M.04</span>
+          <div class="num" data-count="40.8" data-decimals="1" data-suffix="%">40.8%</div>
+          <div class="label">Simulated cost reduction</div>
+          <div class="note">From cost-sensitive threshold tuning, under assumed error costs on public data.</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="glass metric reveal" style="--d:.08s;--w:75%">
+          <span class="idx">M.05</span>
+          <div class="num" data-count="12" data-suffix="+">12+</div>
+          <div class="label">Document formats</div>
+          <div class="note">Parsed by Chat_Doc, a deployed RAG app with a public live demo.</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="glass metric reveal" style="--d:.16s;--w:30%">
+          <span class="idx">M.06</span>
+          <div class="num" data-count="10" data-suffix="%">10%</div>
+          <div class="label">Client retention lift</div>
+          <div class="note">At Trendlyne, by extrapolating client metrics in equity-market reports.</div>
+          <div class="bar"><i></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow"><b>02 //</b> Featured projects</span>
+        <h2>Built end to end, code public</h2>
+      </div>
+      <div class="projects">
+
+        <article class="glass card wide reveal tilt">
+          <div class="card-top">
+            <span class="badge live"><span class="pulse" aria-hidden="true"></span>Live demo</span>
+            <span class="badge">rakesh-anbu/Chat_Doc-RAG</span>
+            <span class="badge">Python</span>
+          </div>
+          <h3>Chat_Doc: multi-format document RAG assistant</h3>
+          <p class="desc">Upload a document, ask questions, get answers grounded in the retrieved passages with source attribution.
+            Runs on a <strong>serverless vector index</strong> with a <strong>two-provider LLM failover</strong>, so a rate limit on one provider doesn't take the app down.</p>
+          <div class="flow" aria-label="Architecture overview">
+            <span class="flow-label">Architecture</span>
+            <span class="step" style="--i:0">PDF · DOCX · PPTX · XLSX…</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:1">Extract &amp; chunk</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:2">Gemini embeddings (768-d)</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:3">Pinecone cosine search</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:4">Groq, fallback Gemini</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:5">Streamed answer</span>
+          </div>
+          <div class="tags">
+            <span class="tag">Pinecone Serverless</span><span class="tag">Gemini Embeddings</span><span class="tag">Groq</span><span class="tag">Gemini Flash</span>
+            <span class="tag">Token streaming</span><span class="tag">Conversation memory</span><span class="tag">Streamlit</span>
+          </div>
+          <div class="card-links">
+            <a class="go" href="https://chatdoc-rag-rakeshanbu.streamlit.app" target="_blank" rel="noopener">Open live demo ↗</a>
+            <a href="https://github.com/rakesh-anbu/Chat_Doc-RAG" target="_blank" rel="noopener">View repository</a>
+          </div>
+        </article>
+
+        <article class="glass card reveal tilt">
+          <div class="card-top">
+            <span class="badge">rakesh-anbu/Credit_Risk_Default_Prediction</span>
+            <span class="badge">MIT</span>
+          </div>
+          <h3>Credit risk &amp; default prediction</h3>
+          <p class="desc">A credit underwriting model that treats errors the way a lender does: approving a defaulter costs far more than rejecting a good applicant.
+            The decision threshold is tuned on <strong>financial cost</strong>, and every prediction is explained with SHAP.</p>
+          <div class="results">
+            <div><b>0.861</b><span>ROC-AUC</span></div>
+            <div><b>75%</b><span>Default recall, tuned threshold</span></div>
+            <div><b>6</b><span>Models benchmarked</span></div>
+          </div>
+          <div class="flow" aria-label="Architecture overview">
+            <span class="flow-label">Architecture</span>
+            <span class="step" style="--i:0">Clean &amp; engineer features</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:1">SMOTE</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:2">Train 6 models</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:3">Cost-based threshold</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:4">SHAP + dashboard</span>
+          </div>
+          <div class="tags">
+            <span class="tag">LightGBM</span><span class="tag">XGBoost</span><span class="tag">CatBoost</span><span class="tag">scikit-learn</span><span class="tag">SHAP</span><span class="tag">Streamlit</span>
+          </div>
+          <p class="fine">Kaggle "Give Me Some Credit" dataset. Savings are simulated with assumed costs of $800 per false positive and $10,000 per false negative.</p>
+          <div class="card-links">
+            <a href="https://github.com/rakesh-anbu/Credit_Risk_Default_Prediction" target="_blank" rel="noopener">View repository</a>
+          </div>
+        </article>
+
+        <article class="glass card reveal tilt" style="--d:.08s">
+          <div class="card-top">
+            <span class="badge">rakesh-anbu/ai-buddy-rag-chatbot</span>
+            <span class="badge">MIT</span>
+          </div>
+          <h3>AI Buddy: conversational RAG with citations</h3>
+          <p class="desc">A LangChain document assistant that answers only from the uploaded files and shows <strong>the file, page and passage</strong> behind each answer.
+            It declines when the context doesn't contain the answer.</p>
+          <div class="flow" aria-label="Architecture overview">
+            <span class="flow-label">Architecture</span>
+            <span class="step" style="--i:0">PDF · DOCX · CSV · TXT</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:1">Recursive chunking</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:2">MiniLM embeddings</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:3">ChromaDB top-4</span><span class="arrow" aria-hidden="true">→</span>
+            <span class="step" style="--i:4">Gemini + memory</span>
+          </div>
+          <div class="tags">
+            <span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag">HuggingFace</span><span class="tag">Gemini</span><span class="tag">Streamlit</span>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/rakesh-anbu/ai-buddy-rag-chatbot" target="_blank" rel="noopener">View repository</a>
+          </div>
+        </article>
+
+        <article class="glass card wide reveal tilt">
+          <div class="card-top">
+            <span class="badge">rakesh-anbu/fake-news-detection</span>
+            <span class="badge">Jupyter</span>
+          </div>
+          <h3>Fake news classification</h3>
+          <p class="desc">Classical NLP baseline on the WELFake dataset of 72,134 articles: TF-IDF features compared across four models, with a linear SVM reaching <strong>94.1% accuracy</strong>.</p>
+          <div class="tags">
+            <span class="tag">scikit-learn</span><span class="tag">TF-IDF</span><span class="tag">LinearSVC</span><span class="tag">pandas</span>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/rakesh-anbu/fake-news-detection" target="_blank" rel="noopener">View repository</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow"><b>03 //</b> Core competencies</span>
+        <h2>What I work with</h2>
+      </div>
+      <div class="skills">
+        <div class="glass skill reveal" style="--d:0s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>LLM applications &amp; RAG</h3>
+          <div class="tags"><span class="tag">RAG pipelines</span><span class="tag">LangChain</span><span class="tag">Gemini</span><span class="tag">Groq</span><span class="tag">Prompt design</span><span class="tag">Voice AI agents</span><span class="tag">Conversation memory</span></div>
+        </div>
+        <div class="glass skill reveal" style="--d:.08s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>Machine learning</h3>
+          <div class="tags"><span class="tag">LightGBM</span><span class="tag">XGBoost</span><span class="tag">CatBoost</span><span class="tag">scikit-learn</span><span class="tag">Feature engineering</span><span class="tag">Imbalanced data</span><span class="tag">SHAP</span><span class="tag">Threshold tuning</span></div>
+        </div>
+        <div class="glass skill reveal" style="--d:.16s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.700 3.600 3 8 3s8-1.300 8-3V5M4 12v7c0 1.700 3.600 3 8 3s8-1.300 8-3v-7"/></svg>Vector search &amp; retrieval</h3>
+          <div class="tags"><span class="tag">Pinecone</span><span class="tag">ChromaDB</span><span class="tag">Embeddings</span><span class="tag">Chunking strategy</span><span class="tag">Cosine similarity</span></div>
+        </div>
+        <div class="glass skill reveal" style="--d:0s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h13"/></svg>NLP</h3>
+          <div class="tags"><span class="tag">Text classification</span><span class="tag">TF-IDF</span><span class="tag">Sentence transformers</span><span class="tag">Document parsing</span></div>
+        </div>
+        <div class="glass skill reveal" style="--d:.08s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg>Data &amp; delivery</h3>
+          <div class="tags"><span class="tag">Python</span><span class="tag">SQL</span><span class="tag">pandas</span><span class="tag">Streamlit</span><span class="tag">Jupyter</span><span class="tag">Git</span><span class="tag">Advanced Excel</span></div>
+        </div>
+        <div class="glass skill reveal" style="--d:.16s">
+          <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v9M19 10v9M9 19v-6M15 19v-6M3 21h18"/></svg>Finance &amp; risk domain</h3>
+          <div class="tags"><span class="tag">Credit risk</span><span class="tag">Retail lending</span><span class="tag">Concurrent audit</span><span class="tag">RBI compliance</span><span class="tag">Equity analysis</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="eyebrow"><b>04 //</b> Experience</span>
+        <h2>From auditing banks to building AI for them</h2>
+      </div>
+      <div class="timeline">
+        <div class="job reveal">
+          <div class="job-head"><h3>AI Engineering</h3><span class="when">Jan 2026 – Present</span></div>
+          <div class="where">doodleblue Innovations · Chennai</div>
+          <ul>
+            <li>Working on a voice AI agent for a client in the financial services sector.</li>
+            <li>Built mentor-assigned ML projects end to end, including the credit-risk system and RAG assistants above.</li>
+          </ul>
+        </div>
+        <div class="job reveal">
+          <div class="job-head"><h3>Concurrent Audit &amp; Risk Advisory</h3><span class="when">Oct 2023 – Oct 2025</span></div>
+          <div class="where">Deloitte · Chennai</div>
+          <ul>
+            <li>Audited retail lending for a multinational bank: mortgages, loans and credit cards, checked against bank policy and RBI guidelines.</li>
+            <li>Reviewed the credit card application process end to end, and independently reviewed other engagement teams' work.</li>
+            <li>Carried out on-site compliance checks and asset verification.</li>
+          </ul>
+        </div>
+        <div class="job reveal">
+          <div class="job-head"><h3>Data Analyst</h3><span class="when">Sep 2022 – Apr 2023</span></div>
+          <div class="where">Trendlyne.com · Bengaluru</div>
+          <ul>
+            <li>Analysed stock-market sectors using univariate, bivariate and regression analysis, and published the reports.</li>
+            <li>Raised client retention by 10% by extrapolating client metrics.</li>
+          </ul>
+        </div>
+        <div class="job reveal">
+          <div class="job-head"><h3>Education</h3></div>
+          <div class="where">Loyola Institute of Business Administration (LIBA), Chennai</div>
+          <ul><li>Business analytics.</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="glass contact reveal">
+        <span class="eyebrow"><b>05 //</b> Contact</span>
+        <h2>Hiring for <span class="glow-text">AI or ML engineering?</span></h2>
+        <p>I'm open to roles in Chennai and Bengaluru, on-site or hybrid. Email is the fastest way to reach me, and I usually reply within a day.</p>
+        <div class="cta">
+          <button class="btn primary" id="emailBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            Email me
+          </button>
+          <button class="btn" id="copyBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            Copy email address
+          </button>
+          <a class="btn" href="https://www.linkedin.com/in/rakesh-anbu/" target="_blank" rel="noopener">Message on LinkedIn</a>
+        </div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="year">2026</span> Rakesh Anbu · Chennai, India</span>
+    <div class="foot-icons">
+      <a class="icon-btn" href="https://github.com/rakesh-anbu" target="_blank" rel="noopener" aria-label="GitHub profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.900 0-1.300.5-2.400 1.200-3.200-.1-.3-.5-1.500.1-3.200 0 0 1-.3 3.300 1.200a11.500 11.500 0 0 1 6 0C17.300 5 18.300 5.300 18.300 5.300c.6 1.700.2 2.900.1 3.200.8.8 1.200 1.900 1.200 3.200 0 4.600-2.800 5.600-5.500 5.900.4.4.8 1.100.8 2.200v3.300c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+      </a>
+      <a class="icon-btn" href="https://www.linkedin.com/in/rakesh-anbu/" target="_blank" rel="noopener" aria-label="LinkedIn profile">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.4 20.4h-3.5v-5.600c0-1.300 0-3-1.900-3s-2.100 1.400-2.100 2.900v5.700H9.400V9h3.400v1.600h.1c.5-.9 1.600-1.900 3.400-1.900 3.600 0 4.300 2.400 4.300 5.500v6.200zM5.300 7.400a2.100 2.100 0 1 1 0-4.100 2.100 2.100 0 0 1 0 4.100zM7.100 20.400H3.600V9h3.500v11.400z"/></svg>
+      </a>
+      <button class="icon-btn" id="emailIcon" type="button" aria-label="Send an email">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  /* ---- Neural network background ---- */
+  (function () {
+    var c = document.getElementById('net');
+    var ctx = c.getContext && c.getContext('2d');
+    if (!ctx) return;
+    var w, h, dpr, nodes = [], mouse = { x: -9999, y: -9999 }, raf = null;
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth; h = window.innerHeight;
+      c.width = w * dpr; c.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var count = Math.max(26, Math.min(84, Math.round(w * h / 21000)));
+      nodes = [];
+      for (var i = 0; i < count; i++) {
+        nodes.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .32, vy: (Math.random() - .5) * .32, r: Math.random() * 1.5 + .6 });
+      }
+    }
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      var max = 138, i, j, a, b, dx, dy, d;
+      for (i = 0; i < nodes.length; i++) {
+        a = nodes[i];
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > w) a.vx *= -1;
+        if (a.y < 0 || a.y > h) a.vy *= -1;
+        for (j = i + 1; j < nodes.length; j++) {
+          b = nodes[j]; dx = a.x - b.x; dy = a.y - b.y; d = Math.sqrt(dx * dx + dy * dy);
+          if (d < max) {
+            ctx.strokeStyle = 'rgba(120, 170, 255,' + (.17 * (1 - d / max)) + ')';
+            ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+        dx = a.x - mouse.x; dy = a.y - mouse.y; d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 190) {
+          ctx.strokeStyle = 'rgba(34, 211, 238,' + (.5 * (1 - d / 190)) + ')';
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+        }
+        ctx.fillStyle = d < 190 ? 'rgba(34, 211, 238, .95)' : 'rgba(167, 139, 250, .65)';
+        ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
+      }
+      if (!reduce) raf = requestAnimationFrame(draw);
+    }
+    size(); draw();
+    var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { size(); if (reduce) draw(); }, 150); });
+    window.addEventListener('pointermove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
+      else if (!reduce && !raf) { raf = requestAnimationFrame(draw); }
+    });
+  })();
+
+  /* ---- Cursor glow, card spotlight and tilt ---- */
+  if (finePointer) {
+    var glow = document.getElementById('cursorGlow');
+    window.addEventListener('pointermove', function (e) {
+      glow.style.opacity = '1';
+      glow.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+    }, { passive: true });
+    Array.prototype.forEach.call(document.querySelectorAll('.glass'), function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var x = e.clientX - r.left, y = e.clientY - r.top;
+        el.style.setProperty('--mx', x + 'px');
+        el.style.setProperty('--my', y + 'px');
+        if (!reduce && el.classList.contains('tilt')) {
+          var rx = ((y / r.height) - .5) * -3.2, ry = ((x / r.width) - .5) * 3.2;
+          el.style.transform = 'perspective(1100px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-3px)';
+        }
+      });
+      el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+    });
+  }
+
+  /* ---- Scroll progress and active nav link ---- */
+  var bar = document.getElementById('progress');
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
+  var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+    var current = -1;
+    targets.forEach(function (s, i) { if (s && s.getBoundingClientRect().top < 140) current = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === current && !a.classList.contains('pill')); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---- Terminal typing ---- */
+  (function () {
+    var term = document.getElementById('term');
+    if (reduce || !term) return;
+    var lines = Array.prototype.slice.call(term.children).map(function (el) {
+      return { cls: el.className, html: el.innerHTML, text: el.textContent };
+    });
+    term.innerHTML = '';
+    var caret = document.createElement('span'); caret.className = 'caret';
+    var i = 0;
+    function next() {
+      if (i >= lines.length) {
+        var last = document.createElement('div'); last.className = 'cmd'; last.appendChild(caret); term.appendChild(last); return;
+      }
+      var ln = lines[i++], el = document.createElement('div');
+      el.className = ln.cls; term.appendChild(el);
+      if (ln.cls.indexOf('cmd') > -1) {
+        var k = 0; el.appendChild(caret);
+        (function type() {
+          if (k < ln.text.length) { el.insertBefore(document.createTextNode(ln.text.charAt(k++)), caret); setTimeout(type, 34 + Math.random() * 40); }
+          else { setTimeout(next, 220); }
+        })();
+      } else { el.innerHTML = ln.html; setTimeout(next, 300); }
+    }
+    setTimeout(next, 500);
+  })();
+
+  /* ---- Reveal and count-up ---- */
+  function countUp(el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    var start = null, dur = 1300;
+    function frame(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1), eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(dec) + suffix;
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  var items = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        var n = en.target.querySelector('[data-count]');
+        if (n && !reduce) countUp(n);
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.1 });
+    Array.prototype.forEach.call(items, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(items, function (el) { el.classList.add('in'); });
+  }
+
+  /* ---- Email: assembled only on click, never shown on the page ---- */
+  function address() {
+    var a = ['rakesh', 'anbu', '1998'].join('');
+    var b = ['gmail', 'com'].join('.');
+    return a + String.fromCharCode(64) + b;
+  }
+  function openMail() {
+    window.location.href = 'mailto:' + address() + '?subject=' + encodeURIComponent('Opportunity for Rakesh Anbu');
+  }
+  var toast = document.getElementById('toast');
+  function say(msg) { toast.textContent = msg; clearTimeout(say.t); say.t = setTimeout(function () { toast.textContent = ''; }, 3500); }
+  document.getElementById('emailBtn').addEventListener('click', openMail);
+  document.getElementById('emailIcon').addEventListener('click', openMail);
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var text = address();
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      say(ok ? '✓ email address copied to clipboard' : 'Could not copy. Please use the Email me button.');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { say('✓ email address copied to clipboard'); }, fallback);
+    } else { fallback(); }
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
